@@ -150,6 +150,6 @@ PAUSE
 
 DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 
-ERASE /F /Q "%WinDir%\Temp\OSArchTemp.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 
 @ECHO Done!
