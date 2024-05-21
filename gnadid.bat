@@ -60,7 +60,7 @@ FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccountsFina
 
   RMDIR "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1
 
-  RD "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1)
+  RD "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1
 
 DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFinal.txt" >NUL 2>&1
 
