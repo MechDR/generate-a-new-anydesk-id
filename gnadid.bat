@@ -35,10 +35,10 @@ DIR %SystemDrive%\Users /AD >> "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt"
 TYPE "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" | FINDSTR.exe /V /I "Volume Directory Public File(s) Dir(s)" | FINDSTR.exe /V /I /C:"All Users" | FINDSTR.exe /V /I /C:"Default User" | FINDSTR.exe /V /I /C:"<DIR>          .." | FINDSTR.exe /V /I /C:"<DIR>          ." | FINDSTR.exe /V /I "^$" >> "%WinDir%\Temp\LocalUserAccountsFiltered.txt"
 DEL /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
-FOR /F "USEBACKQ TOKENS=5 DELIMS= " %%U IN ("%WinDir%\Temp\LocalUserAccountsFiltered.txt") do @ECHO %%U >> "%WinDir%\Temp\LocalUserAccountsFinal.txt"
+FOR /F "USEBACKQ TOKENS=5 DELIMS= " %%U IN ("%WinDir%\Temp\LocalUserAccountsFiltered.txt") DO (@ECHO %%U >> "%WinDir%\Temp\LocalUserAccountsFinal.txt")
 DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
-FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccountsFinal.txt") do (
+FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccountsFinal.txt") DO (
     TAKEOWN.exe /F "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /A /R /D Y >NUL 2>&1
     ICACLS.exe "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /T /C /Q /GRANT Administrators:F System:F Everyone:F >NUL 2>&1
     RMDIR "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1
