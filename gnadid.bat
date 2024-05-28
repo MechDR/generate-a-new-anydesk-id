@@ -3,6 +3,7 @@
 TITLE Generate A New AnyDesk ID
 
 
+
 @ECHO Disabling the AnyDesk service...
 
 SC.exe stop AnyDesk >NUL 2>&1
@@ -12,9 +13,11 @@ SC.exe failure AnyDesk reset= 86400 actions= ////// >NUL 2>&1
 SC.exe config AnyDesk start= disabled >NUL 2>&1
 
 
+
 @ECHO Killing the AnyDesk process...
 
 TASKKILL.exe /F /IM AnyDesk.exe /T >NUL 2>&1
+
 
 
 @ECHO Deleting AnyDesk settings in ProgramData...
@@ -23,6 +26,7 @@ TAKEOWN.exe /F "%ProgramData%\AnyDesk" /A /R /D Y >NUL 2>&1
 ICACLS.exe "%ProgramData%\AnyDesk" /T /C /Q /GRANT Administrators:F System:F Everyone:F >NUL 2>&1
 RMDIR "%ProgramData%\AnyDesk" /S /Q >NUL 2>&1
 RD "%ProgramData%\AnyDesk" /S /Q >NUL 2>&1
+
 
 
 @ECHO Deleting AnyDesk settings in local user accounts...
@@ -43,6 +47,7 @@ DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFinal.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsFinal.txt" >NUL 2>&1
 
 
+
 @ECHO Enabling the AnyDesk service...
 
 SC.exe config AnyDesk start= auto >NUL 2>&1
@@ -50,6 +55,7 @@ SC.exe failure AnyDesk reset= 0 actions= restart/0 >NUL 2>&1
 SC.exe failure AnyDesk reset= 0 actions= restart/0/restart/0 >NUL 2>&1
 SC.exe failure AnyDesk reset= 0 actions= restart/0/restart/0/restart/0 >NUL 2>&1
 SC.exe start AnyDesk >NUL 2>&1
+
 
 
 @ECHO Starting the AnyDesk process...
@@ -68,6 +74,7 @@ IF "%ARCH%"=="64-bit" GOTO 64BIT ELSE (
         GOTO END)
 
 
+
 :64BIT
 
 IF EXIST "C:\Program Files (x86)\AnyDesk" (
@@ -75,6 +82,7 @@ IF EXIST "C:\Program Files (x86)\AnyDesk" (
     START AnyDesk.exe >NUL 2>&1
     GOTO END >NUL 2>&1
     ) ELSE GOTO ADINF
+
 
 
 :32BIT
@@ -86,6 +94,7 @@ IF EXIST "C:\Program Files\AnyDesk" (
     ) ELSE GOTO ADINF
 
 
+
 :ADINF
 
 @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
@@ -94,6 +103,7 @@ IF EXIST "C:\Program Files\AnyDesk" (
 @ECHO ^| manually, wherever it may reside.                                 ^|
 @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
 PAUSE
+
 
 
 :END
