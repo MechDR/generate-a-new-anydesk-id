@@ -6,4 +6,4 @@ Some people might call this method destructive (sice it destroys all AnyDesk set
 
 ## Very important note!
 
-You have to run the script as an administrator in Windows (right click --> `Run as administrator`) or as root in Linux (first you need to give the script execution privileges, `chmod +x /path/to/script`).
+You have to run the script as an administrator in Windows (`right click --> Run as administrator`) or as root in Linux (first you need to give the script execution privileges, `chmod +x /path/to/script`).
