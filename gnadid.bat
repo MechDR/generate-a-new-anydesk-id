@@ -31,10 +31,6 @@ RD "%ProgramData%\AnyDesk" /S /Q >NUL 2>&1
 
 @ECHO Deleting AnyDesk settings in local user accounts...
 
-DEL /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
-DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
 DIR %SystemDrive%\Users /B /AD >> "%WinDir%\Temp\LocalUserAccounts.txt"
 FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccounts.txt") DO (
     TAKEOWN.exe /F "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /A /R /D Y >NUL 2>&1
