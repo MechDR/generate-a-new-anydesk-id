@@ -31,20 +31,18 @@ RD "%ProgramData%\AnyDesk" /S /Q >NUL 2>&1
 
 @ECHO Deleting AnyDesk settings in local user accounts...
 
-DIR %SystemDrive%\Users /AD >> "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt"
-TYPE "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" | FINDSTR.exe /V /I "Volume Directory Public File(s) Dir(s)" | FINDSTR.exe /V /I /C:"All Users" | FINDSTR.exe /V /I /C:"Default User" | FINDSTR.exe /V /I /C:"<DIR>          .." | FINDSTR.exe /V /I /C:"<DIR>          ." | FINDSTR.exe /V /I "^$" >> "%WinDir%\Temp\LocalUserAccountsFiltered.txt"
 DEL /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsUnfiltered.txt" >NUL 2>&1
-FOR /F "USEBACKQ TOKENS=5 DELIMS= " %%U IN ("%WinDir%\Temp\LocalUserAccountsFiltered.txt") DO (@ECHO %%U >> "%WinDir%\Temp\LocalUserAccountsFinal.txt")
 DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsFiltered.txt" >NUL 2>&1
-FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccountsFinal.txt") DO (
+DIR %SystemDrive%\Users /B /AD >> "%WinDir%\Temp\LocalUserAccounts.txt"
+FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%K IN ("%WinDir%\Temp\LocalUserAccounts.txt") DO (
     TAKEOWN.exe /F "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /A /R /D Y >NUL 2>&1
     ICACLS.exe "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /T /C /Q /GRANT Administrators:F System:F Everyone:F >NUL 2>&1
     RMDIR "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1
     RD "%SystemDrive%\Users\%%K\AppData\Roaming\AnyDesk" /S /Q >NUL 2>&1)
-DEL /F /Q "%WinDir%\Temp\LocalUserAccountsFinal.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\LocalUserAccountsFinal.txt" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\LocalUserAccounts.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\LocalUserAccounts.txt" >NUL 2>&1
 
 
 
@@ -60,18 +58,24 @@ SC.exe start AnyDesk >NUL 2>&1
 
 @ECHO Starting the AnyDesk process...
 
-WMIC OS GET OSArchitecture >> "%WinDir%\Temp\OSArchTemp.txt"
-TYPE "%WinDir%\Temp\OSArchTemp.txt" | FINDSTR.exe /V /I "OSArchitecture" >> "%WinDir%\Temp\OSArch.txt"
-DEL /F /Q "%WinDir%\Temp\OSArchTemp.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\OSArchTemp.txt" >NUL 2>&1
-FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%M IN ("%WinDir%\Temp\OSArch.txt") DO SET ARCH=%%M
-IF "%ARCH%"=="64-bit" GOTO 64BIT ELSE (
-    IF "%ARCH%"=="32-bit" GOTO 32BIT ELSE (
-        @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
-        @ECHO ^| This OS architecture is not supported!                            ^|
-        @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
-        PAUSE
-        GOTO END)
+DEL /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
+SYSTEMINFO.exe >> "%WinDir%\Temp\SystemInfoTemp.txt" 2>NUL
+FOR /F "USEBACKQ TOKENS=3 DELIMS=: " %%M IN (`FINDSTR.exe /B /C:"System Type" "%WinDir%\Temp\SystemInfoTemp.txt"`) DO (FOR /F "DELIMS=-" %%N IN ("%%M") DO (ECHO %%N) >> "%WinDir%\Temp\OSArch.txt") >NUL 2>&1
+FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%F IN ("%WinDir%\Temp\OSArch.txt") DO SET "ARCH=%%F" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
+IF /I "%ARCH%"=="x64" GOTO 64BIT
+IF /I "%ARCH%"=="x86" GOTO 32BIT 
+@ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
+@ECHO ^| This OS architecture is not supported!                            ^|
+@ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
+PAUSE
+GOTO END
 
 
 
@@ -81,7 +85,7 @@ IF EXIST "C:\Program Files (x86)\AnyDesk" (
     CD "C:\Program Files (x86)\AnyDesk" >NUL 2>&1
     START AnyDesk.exe >NUL 2>&1
     GOTO END >NUL 2>&1
-    ) ELSE ( GOTO ADINF )
+    ) ELSE ( GOTO ADINFO )
 
 
 
@@ -91,11 +95,11 @@ IF EXIST "C:\Program Files\AnyDesk" (
     CD "C:\Program Files\AnyDesk" >NUL 2>&1
     START AnyDesk.exe >NUL 2>&1
     GOTO END >NUL 2>&1
-    ) ELSE ( GOTO ADINF )
+    ) ELSE ( GOTO ADINFO )
 
 
 
-:ADINF
+:ADINFO
 
 @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
 @ECHO ^| Seems like AnyDesk is not installed or it's not installed in the  ^|
@@ -103,11 +107,10 @@ IF EXIST "C:\Program Files\AnyDesk" (
 @ECHO ^| manually, wherever it may reside.                                 ^|
 @ECHO ^+^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^=^+
 PAUSE
+GOTO END
 
 
 
 :END
 
-DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 @ECHO Done!
