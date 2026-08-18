@@ -54,15 +54,15 @@ SC.exe start AnyDesk >NUL 2>&1
 
 @ECHO Starting the AnyDesk process...
 
-DEL /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\SystemInfo.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\SystemInfo.txt" >NUL 2>&1
 DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
-SYSTEMINFO.exe >> "%WinDir%\Temp\SystemInfoTemp.txt" 2>NUL
-FOR /F "USEBACKQ TOKENS=3 DELIMS=: " %%M IN (`FINDSTR.exe /B /C:"System Type" "%WinDir%\Temp\SystemInfoTemp.txt"`) DO (FOR /F "DELIMS=-" %%N IN ("%%M") DO (ECHO %%N) >> "%WinDir%\Temp\OSArch.txt") >NUL 2>&1
+SYSTEMINFO.exe >> "%WinDir%\Temp\SystemInfo.txt" 2>NUL
+FOR /F "USEBACKQ TOKENS=3 DELIMS=: " %%M IN (`FINDSTR.exe /B /C:"System Type" "%WinDir%\Temp\SystemInfo.txt"`) DO (FOR /F "DELIMS=-" %%N IN ("%%M") DO (ECHO %%N) >> "%WinDir%\Temp\OSArch.txt") >NUL 2>&1
 FOR /F "USEBACKQ TOKENS=1 DELIMS= " %%F IN ("%WinDir%\Temp\OSArch.txt") DO SET "ARCH=%%F" >NUL 2>&1
-DEL /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
-ERASE /F /Q "%WinDir%\Temp\SystemInfoTemp.txt" >NUL 2>&1
+DEL /F /Q "%WinDir%\Temp\SystemInfo.txt" >NUL 2>&1
+ERASE /F /Q "%WinDir%\Temp\SystemInfo.txt" >NUL 2>&1
 DEL /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 ERASE /F /Q "%WinDir%\Temp\OSArch.txt" >NUL 2>&1
 IF /I "%ARCH%"=="x64" GOTO 64BIT
